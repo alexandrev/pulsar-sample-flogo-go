@@ -1,0 +1,59 @@
+{
+  "name": "Sample app",
+  "type": "flogo:app",
+  "version": "0.0.1",
+  "appModel": "1.1.0",
+  "description": "Sample flogo app",
+  "imports": [
+    "github.com/mmussett/flogo-components/activity/pulsar",
+    "github.com/project-flogo/contrib/function/coerce",
+    "github.com/project-flogo/contrib/function/datetime",
+    "github.com/project-flogo/contrib/trigger/timer",
+    "github.com/project-flogo/flow"
+  ],
+  "triggers": [
+    {
+      "id": "timer_trigger",
+      "ref": "#timer",
+      "name": "Timer Trigger",
+      "description": "Simple Timer trigger",
+      "handlers": [
+        {
+          "settings": {
+            "repeatInterval": "1m"
+          },
+          "action": {
+            "ref": "#flow",
+            "settings": {
+              "flowURI": "res://flow:hello_world"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "flow:hello_world",
+      "data": {
+        "name": "HelloWorld",
+        "tasks": [
+          {
+            "id": "pulsar_2",
+            "name": "pulsar",
+            "description": "activity description",
+            "activity": {
+              "ref": "#pulsar",
+              "input": {
+                "payload": "=coerce.toString(datetime.currentDatetime())",
+                "sendTimeout": 30,
+                "topic": "counter",
+                "url": "pulsar://localhost:6650"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
